@@ -24,18 +24,43 @@
             <th>Tel</th>
         </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="tbl-body"></tbody>
     </table>
 </main>
 
 <script>
-    // Fill the table with https://randomuser.me/api/?results=20 when clicking the `fetch-users` button
+    // Fill the table with https://randomuser.me/api/?results=20 when clicking the `fetch-users` button 
     // Add Age column
     // Add gender column, with two different emojis
     // Filter user by gender
     // Sort user by age
     // Search user by name
     // Add users instead of replacing them.
+    const FetchUserBtn = document.querySelector('#fetch-users');
+    const UserTable = document.querySelector('#tbl-users');
+    const TableBody = document.querySelector('#tbl-body');
+
+    FetchUserBtn.addEventListener('click', () => {
+        fetch("https://randomuser.me/api/?results=20", {
+            method: "GET",
+        })
+        .then(response => {
+            response.json().then(data => {
+                data.results.forEach(user => {
+                    userRecord = document.createElement('tr');
+
+                    userRecord.innerHTML = `
+                        <td><img src="${user.picture.thumbnail}" /></td>
+                        <td>${user.name.first} ${user.name.last}</td>
+                        <td>${user.email}</td>
+                        <td>${user.cell}</td>
+                    `;
+
+                    TableBody.appendChild(userRecord);
+                });
+            })
+        })
+    })
 </script>
 </body>
 </html>
