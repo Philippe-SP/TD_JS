@@ -23,6 +23,7 @@
             <th>Email</th>
             <th>Tel</th>
             <th>Age</th>
+            <th>Genre</th>
         </tr>
         </thead>
         <tbody id="tbl-body"></tbody>
@@ -48,16 +49,20 @@
         .then(response => {
             response.json().then(data => {
                 data.results.forEach(user => {
+                    // Création d'une ligne dans le tableau
                     userRecord = document.createElement('tr');
 
+                    // Contenu de la ligne du tableau
                     userRecord.innerHTML = `
                         <td><img src="${user.picture.thumbnail}" /></td>
                         <td>${user.name.first} ${user.name.last}</td>
                         <td>${user.email}</td>
                         <td>${user.cell}</td>
                         <td>${user.dob.age}</td>
+                        <td>${user.gender === 'male' ? "&#9794;" : "&#9792;"}</td>
                     `;
 
+                    // Ajout de la ligne dans le tableau
                     TableBody.appendChild(userRecord);
                 });
             })
