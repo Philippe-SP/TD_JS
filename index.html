@@ -14,6 +14,11 @@
         <h1>Vanilla JS Example</h1>
         <hr>
         <button id="fetch-users">Fetch Users</button>
+        <select id="gender-filter">
+            <option value="All">Tous</option>
+            <option value="Male">Hommes</option>
+            <option value="Female">Femmes</option>
+        </select>
     </div>
     <table id="tbl-users">
         <thead>
@@ -39,35 +44,55 @@
     // Search user by name
     // Add users instead of replacing them.
     const FetchUserBtn = document.querySelector('#fetch-users');
-    const UserTable = document.querySelector('#tbl-users');
     const TableBody = document.querySelector('#tbl-body');
+    const FilterSelect = document.querySelector('#gender-filter');
 
-    FetchUserBtn.addEventListener('click', () => {
-        fetch("https://randomuser.me/api/?results=20", {
-            method: "GET",
-        })
-        .then(response => {
-            response.json().then(data => {
-                data.results.forEach(user => {
-                    // Création d'une ligne dans le tableau
-                    userRecord = document.createElement('tr');
+    let usersData = []; // Stockage des utilisateurs récupérés
 
-                    // Contenu de la ligne du tableau
-                    userRecord.innerHTML = `
-                        <td><img src="${user.picture.thumbnail}" /></td>
-                        <td>${user.name.first} ${user.name.last}</td>
-                        <td>${user.email}</td>
-                        <td>${user.cell}</td>
-                        <td>${user.dob.age}</td>
-                        <td>${user.gender === 'male' ? "&#9794;" : "&#9792;"}</td>
-                    `;
+    // Affichage des utilisateurs
+    function DisplayUsers(users) {
+        TableBody.innerHTML = ''; // nettoyage du tableau
 
-                    // Ajout de la ligne dans le tableau
-                    TableBody.appendChild(userRecord);
-                });
-            })
-        })
-    })
+        users.forEach(user => {
+            const userRecord = document.createElement('tr');
+            userRecord.innerHTML = `
+                <td><img src="${user.picture.thumbnail}" /></td>
+                <td>${user.name.first} ${user.name.last}</td>
+                <td>${user.email}</td>
+                <td>${user.cell}</td>
+                <td>${user.dob.age}</td>
+                <td>${user.gender === 'male' ? "&#9794;" : "&#9792;"}</td>
+            `;
+            TableBody.appendChild(userRecord);
+        });
+    }
+
+    // Fonction fetch
+    function FetchAndDisplayUsers() {
+        fetch("https://randomuser.me/api/?results=20")
+            .then(response => response.json())
+            .then(data => {
+                usersData = data.results; // stockeage des utilisateurs dans le tableau
+                ApplyFilter();
+            });
+    }
+
+    // Filtre des utilisateurs seon leur genre
+    function ApplyFilter() {
+        let filteredUsers = usersData;
+
+        if (FilterSelect.value === 'Male') {
+            filteredUsers = usersData.filter(user => user.gender === 'male');
+        } else if (FilterSelect.value === 'Female') {
+            filteredUsers = usersData.filter(user => user.gender === 'female');
+        }
+
+        DisplayUsers(filteredUsers);
+    }
+
+    FetchUserBtn.addEventListener('click', FetchAndDisplayUsers);
+    FilterSelect.addEventListener('change', ApplyFilter);
+
 </script>
 </body>
 </html>
