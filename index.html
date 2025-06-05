@@ -15,6 +15,7 @@
         <hr>
         <button id="fetch-users">Fetch Users</button>
         <button id="sort-users">Sort Users</button>
+        <input type="text" id="search-name" placeholder="Rechercher par nom...">
         <select id="gender-filter">
             <option value="All">Tous</option>
             <option value="Male">Hommes</option>
@@ -37,13 +38,14 @@
 </main>
 
 <script>
-    // Sort user by age
     // Search user by name
     // Add users instead of replacing them.
     const FetchUserBtn = document.querySelector('#fetch-users');
     const TableBody = document.querySelector('#tbl-body');
     const FilterSelect = document.querySelector('#gender-filter');
-    const SortButton = document.querySelector('#sort-users')
+    const SortButton = document.querySelector('#sort-users');
+    const SearchInput = document.querySelector('#search-name');
+
 
     let ageSortState = "no-sort"; // Valeur par défaut --> non trié
 
@@ -92,17 +94,29 @@
 
     // Filtre + tri
     function FilterAndSort() {
-        let filteredUsers = usersData;
+    let filteredUsers = usersData;
 
-        if (FilterSelect.value === 'Male') {
-            filteredUsers = usersData.filter(user => user.gender === 'male');
-        } else if (FilterSelect.value === 'Female') {
-            filteredUsers = usersData.filter(user => user.gender === 'female');
-        }
-
-        const sortedUsers = SortUsers(filteredUsers); // Tri des utilisateurs avant l'affichage
-        DisplayUsers(sortedUsers);
+    // 1. Filtrer par genre
+    if (FilterSelect.value === 'Male') {
+        filteredUsers = usersData.filter(user => user.gender === 'male');
+    } else if (FilterSelect.value === 'Female') {
+        filteredUsers = usersData.filter(user => user.gender === 'female');
     }
+
+    // 2. Filtrer par nom (prénom + nom)
+    const searchTerm = SearchInput.value.toLowerCase();
+    filteredUsers = filteredUsers.filter(user => {
+        const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+        return fullName.includes(searchTerm);
+    });
+
+    // 3. Trier par âge si demandé
+    const sortedUsers = SortUsers(filteredUsers);
+
+    // 4. Affichage
+    DisplayUsers(sortedUsers);
+}
+
 
     // Fonction du trie des utilsateurs par age
     function SortUsers(users) {
@@ -125,9 +139,11 @@
         }
     }
 
-    FetchUserBtn.addEventListener('click', FetchAndDisplayUsers);
-    FilterSelect.addEventListener('change', ApplyFilter);
-    SortButton.addEventListener('click', FilterAndSort);
+    FetchUserBtn.addEventListener('click', FetchAndDisplayUsers); // Bouton fetch
+    FilterSelect.addEventListener('change', ApplyFilter); // Filtre selon le select
+    SortButton.addEventListener('click', FilterAndSort); // Tri selon l'age
+    SearchInput.addEventListener('input', FilterAndSort); // Recherche d'utilisateur
+
 
 </script>
 </body>
