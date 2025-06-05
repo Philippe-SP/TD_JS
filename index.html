@@ -14,6 +14,7 @@
         <h1>Vanilla JS Example</h1>
         <hr>
         <button id="fetch-users">Fetch Users</button>
+        <button id="sort-users">Sort Users</button>
         <select id="gender-filter">
             <option value="All">Tous</option>
             <option value="Male">Hommes</option>
@@ -36,16 +37,15 @@
 </main>
 
 <script>
-    // Fill the table with https://randomuser.me/api/?results=20 when clicking the `fetch-users` button 
-    // Add Age column
-    // Add gender column, with two different emojis
-    // Filter user by gender
     // Sort user by age
     // Search user by name
     // Add users instead of replacing them.
     const FetchUserBtn = document.querySelector('#fetch-users');
     const TableBody = document.querySelector('#tbl-body');
     const FilterSelect = document.querySelector('#gender-filter');
+    const SortButton = document.querySelector('#sort-users')
+
+    let ageSortState = "no-sort"; // Valeur par défaut --> non trié
 
     let usersData = []; // Stockage des utilisateurs récupérés
 
@@ -72,7 +72,7 @@
         fetch("https://randomuser.me/api/?results=20")
             .then(response => response.json())
             .then(data => {
-                usersData = data.results; // stockeage des utilisateurs dans le tableau
+                usersData = data.results; // stockage des utilisateurs dans le tableau
                 ApplyFilter();
             });
     }
@@ -90,8 +90,44 @@
         DisplayUsers(filteredUsers);
     }
 
+    // Filtre + tri
+    function FilterAndSort() {
+        let filteredUsers = usersData;
+
+        if (FilterSelect.value === 'Male') {
+            filteredUsers = usersData.filter(user => user.gender === 'male');
+        } else if (FilterSelect.value === 'Female') {
+            filteredUsers = usersData.filter(user => user.gender === 'female');
+        }
+
+        const sortedUsers = SortUsers(filteredUsers); // Tri des utilisateurs avant l'affichage
+        DisplayUsers(sortedUsers);
+    }
+
+    // Fonction du trie des utilsateurs par age
+    function SortUsers(users) {
+        if (ageSortState === "no-sort") {
+            ageSortState = "ascended";
+            SortButton.innerHTML = "Sort users &#8613;";
+            return users.slice().sort((a, b) => a.dob.age - b.dob.age); // Tri dans l'ordre croissant  
+        }
+
+        if (ageSortState === "ascended") {
+            ageSortState = "descended";
+            SortButton.innerHTML = "Sort users &#8615;";
+            return users.slice().sort((a, b) => b.dob.age - a.dob.age); // Tri dans l'ordre décroissant
+        }
+
+        if (ageSortState === "descended") {
+            ageSortState = "no-sort";
+            SortButton.innerHTML = "Sort users";
+            return users; // Pas de tri 
+        }
+    }
+
     FetchUserBtn.addEventListener('click', FetchAndDisplayUsers);
     FilterSelect.addEventListener('change', ApplyFilter);
+    SortButton.addEventListener('click', FilterAndSort);
 
 </script>
 </body>
