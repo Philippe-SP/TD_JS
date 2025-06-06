@@ -38,8 +38,6 @@
 </main>
 
 <script>
-    // Search user by name
-    // Add users instead of replacing them.
     const FetchUserBtn = document.querySelector('#fetch-users');
     const TableBody = document.querySelector('#tbl-body');
     const FilterSelect = document.querySelector('#gender-filter');
@@ -94,28 +92,28 @@
 
     // Filtre + tri
     function FilterAndSort() {
-    let filteredUsers = usersData;
+        let filteredUsers = usersData;
 
-    // 1. Filtrer par genre
-    if (FilterSelect.value === 'Male') {
-        filteredUsers = usersData.filter(user => user.gender === 'male');
-    } else if (FilterSelect.value === 'Female') {
-        filteredUsers = usersData.filter(user => user.gender === 'female');
+        // 1. Filtrer par genre
+        if (FilterSelect.value === 'Male') {
+            filteredUsers = usersData.filter(user => user.gender === 'male');
+        } else if (FilterSelect.value === 'Female') {
+            filteredUsers = usersData.filter(user => user.gender === 'female');
+        }
+
+        // 2. Filtrer par nom (prénom + nom)
+        const searchTerm = SearchInput.value.toLowerCase();
+        filteredUsers = filteredUsers.filter(user => {
+            const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+            return fullName.includes(searchTerm);
+        });
+
+        // 3. Trier par âge
+        const sortedUsers = SortUsers(filteredUsers);
+
+        // 4. Affichage
+        DisplayUsers(sortedUsers);
     }
-
-    // 2. Filtrer par nom (prénom + nom)
-    const searchTerm = SearchInput.value.toLowerCase();
-    filteredUsers = filteredUsers.filter(user => {
-        const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
-        return fullName.includes(searchTerm);
-    });
-
-    // 3. Trier par âge si demandé
-    const sortedUsers = SortUsers(filteredUsers);
-
-    // 4. Affichage
-    DisplayUsers(sortedUsers);
-}
 
 
     // Fonction du trie des utilsateurs par age
